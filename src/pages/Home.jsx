@@ -53,14 +53,14 @@ export default function Home() {
       </div>
 
       {/* People list */}
-      <h1 className="text-2xl font-bold mb-4">People</h1>
+{/*       <h1 className="text-2xl font-bold mb-4">People</h1> */}
       <div className="grid grid-cols-2 gap-4">
         {peopleData.map((person) => (
           <div
             key={person.id}
             onClick={() => toggleSelect(person)}
-            className={`flex items-center gap-4 p-4 border rounded cursor-pointer transition ${
-              selectedPeople.includes(person) ? "bg-red-100" : "hover:bg-gray-50"
+            className={`flex items-center gap-4 p-4  rounded cursor-pointer transition ${
+              selectedPeople.includes(person) ? "bg-stone-50" : "hover:bg-gray-50"
             }`}
           >
             <img
@@ -91,4 +91,5 @@ export default function Home() {
     </div>
   );
 }
+
 
