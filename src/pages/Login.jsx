@@ -21,12 +21,13 @@ export default function Login() {
 
   return (
     <div className="flex items-center justify-center h-screen">
-      <div>
-        <img src="/" alt="logo"/>
+    <div>
+    <div>
+        <img src="/logo.png" alt="logo"/>
       </div>
       <form
         onSubmit={handleSubmit}
-        className="bg-white p-6 rounded-lg shadow-lg w-80"
+        className="bg-white p-6 w-80"
       >
         <h3 className="text-2xl font-bold mb-4 text-center">Login</h3>
         <input
@@ -51,6 +52,8 @@ export default function Login() {
         </button>
       </form>
     </div>
+    </div>
   );
 }
+
 
