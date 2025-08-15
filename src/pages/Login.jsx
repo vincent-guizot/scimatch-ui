@@ -20,12 +20,15 @@ export default function Login() {
   };
 
   return (
-    <div className="flex items-center justify-center h-screen bg-red-100">
+    <div className="flex items-center justify-center h-screen">
+      <div>
+        <img src="/" alt="logo"/>
+      </div>
       <form
         onSubmit={handleSubmit}
         className="bg-white p-6 rounded-lg shadow-lg w-80"
       >
-        <h1 className="text-2xl font-bold mb-4 text-red-600">Login</h1>
+        <h3 className="text-2xl font-bold mb-4 text-center">Login</h3>
         <input
           type="text"
           placeholder="Enter username"
@@ -42,7 +45,7 @@ export default function Login() {
         />
         <button
           type="submit"
-          className="w-full bg-red-600 hover:bg-red-700 text-white py-2 px-4 rounded"
+          className="w-full bg-red-700 hover:bg-red-800 text-white py-2 px-4 rounded"
         >
           Login
         </button>
@@ -50,3 +53,4 @@ export default function Login() {
     </div>
   );
 }
+
