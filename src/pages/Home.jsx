@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import peopleData from "../data/people";
@@ -7,6 +7,14 @@ export default function Home() {
   const { addMatch, matches } = useAuth();
   const navigate = useNavigate();
   const [selectedPeople, setSelectedPeople] = useState([]);
+  const [username, setUsername] = useState("");
+
+  useEffect(() => {
+    const storedUsername = localStorage.getItem("username");
+    if (storedUsername) {
+      setUsername(storedUsername);
+    }
+  }, []);
 
   const toggleSelect = (person) => {
     const alreadySelected = selectedPeople.includes(person);
@@ -31,6 +39,20 @@ export default function Home() {
 
   return (
     <div className="p-6">
+      {/* Logo + Welcome */}
+      <div className="flex flex-col items-center mb-6">
+        <img
+          src="/logo.png"
+          alt="logo"
+          className="w-16 h-16 object-contain mb-2"
+        />
+        <h2 className="text-lg font-bold">
+          Welcome, {username || "Guest"}
+        </h2>
+        <p className="text-gray-600">Pilih 3 orang pilihan mu</p>
+      </div>
+
+      {/* People list */}
       <h1 className="text-2xl font-bold mb-4">People</h1>
       <div className="grid grid-cols-2 gap-4">
         {peopleData.map((person) => (
@@ -53,6 +75,8 @@ export default function Home() {
           </div>
         ))}
       </div>
+
+      {/* Button */}
       <button
         onClick={handleMatch}
         disabled={selectedPeople.length < 1}
