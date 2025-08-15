@@ -10,9 +10,9 @@ export default function Home() {
   const [username, setUsername] = useState("");
 
   useEffect(() => {
-    const storedUsername = localStorage.getItem("username");
+    const storedUsername = localStorage.getItem("user");
     if (storedUsername) {
-      setUsername(storedUsername);
+      setUsername(storedUsername.username);
     }
   }, []);
 
@@ -91,3 +91,4 @@ export default function Home() {
     </div>
   );
 }
+
