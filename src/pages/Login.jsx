@@ -2,6 +2,7 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import axios from "axios";
+import { motion } from "framer-motion";
 
 export default function Login() {
   const [username, setUsername] = useState("");
@@ -26,10 +27,7 @@ export default function Login() {
         { username, password }
       );
 
-      // Remove password before storing
       const { password: pwd, ...userDataWithoutPwd } = res.data.data;
-
-      // Save user data in context & localStorage via login
       login(userDataWithoutPwd);
 
       navigate("/home");
@@ -45,20 +43,36 @@ export default function Login() {
   };
 
   return (
-    <div className="flex items-center justify-center h-screen bg-gray-100">
-      <div className="bg-white p-6 w-80 rounded-lg shadow-lg flex flex-col items-center">
-        {/* Logo container */}
-        <div className="w-24 h-24 mb-4 flex items-center justify-center">
+    <div className="flex items-center justify-center h-screen bg-white-100">
+      <motion.div
+        initial={{ y: -20, opacity: 0 }}
+        animate={{ y: 0, opacity: 1 }}
+        transition={{ type: "spring", stiffness: 100, damping: 8 }}
+        className="bg-white w-80  flex flex-col items-center rounded-2xl p-6"
+      >
+        {/* Bouncing Logo */}
+        <motion.div
+          initial={{ y: 0 }}
+          animate={{ y: [0, -15, 0] }}
+          transition={{
+            duration: 1.5,
+            repeat: Infinity,
+            ease: "easeInOut",
+          }}
+          className="w-55 h-55 mb-2 -mt-16 flex items-center justify-center"
+        >
           <img
             src="/logo.png"
             alt="logo"
             className="max-w-full max-h-full object-contain"
           />
-        </div>
+        </motion.div>
 
         {/* Form */}
         <form onSubmit={handleSubmit} className="w-full">
-          <h3 className="text-2xl font-bold mb-4 text-center">Login</h3>
+          <h3 className="text-lg font-bold mb-4 text-center">
+            Yuk, login dulu koko cici
+          </h3>
 
           <input
             type="text"
@@ -97,7 +111,7 @@ export default function Login() {
             {loading ? "Logging in..." : "Login"}
           </button>
         </form>
-      </div>
+      </motion.div>
     </div>
   );
 }

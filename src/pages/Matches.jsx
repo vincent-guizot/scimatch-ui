@@ -20,9 +20,12 @@ export default function Matches() {
 
     try {
       if (user.role === "Member") {
-        const res = await axios.get("http://localhost:5000/api/likes", {
-          headers: { "x-user": user.id },
-        });
+        const res = await axios.get(
+          "https://scimatch-server.onrender.com/api/likes",
+          {
+            headers: { "x-user": user.id },
+          }
+        );
 
         setMemberChoices(
           res.data
@@ -30,9 +33,12 @@ export default function Matches() {
             .map((like) => like.likedUser.username)
         );
       } else {
-        const res = await axios.get("http://localhost:5000/api/matches", {
-          headers: { "x-user": user.id },
-        });
+        const res = await axios.get(
+          "https://scimatch-server.onrender.com/api/matches",
+          {
+            headers: { "x-user": user.id },
+          }
+        );
         const mutuals = res.data.filter((m) => m.User1Id && m.User2Id);
 
         setMutualMatches(
@@ -58,9 +64,12 @@ export default function Matches() {
 
   const handleGenerateMatches = async () => {
     try {
-      await axios.get("http://localhost:5000/api/matches/generate", {
-        headers: { "x-user": user.id },
-      });
+      await axios.get(
+        "https://scimatch-server.onrender.com/api/matches/generate",
+        {
+          headers: { "x-user": user.id },
+        }
+      );
       await fetchMatches();
     } catch (err) {
       console.error("Error generating matches:", err);
@@ -76,13 +85,19 @@ export default function Matches() {
       return;
 
     try {
-      await axios.delete("http://localhost:5000/api/matches/delete/all", {
-        headers: { "x-user": user.id },
-      });
+      await axios.delete(
+        "https://scimatch-server.onrender.com/api/matches/delete/all",
+        {
+          headers: { "x-user": user.id },
+        }
+      );
 
-      await axios.delete("http://localhost:5000/api/likes/delete/all", {
-        headers: { "x-user": user.id },
-      });
+      await axios.delete(
+        "https://scimatch-server.onrender.com/api/likes/delete/all",
+        {
+          headers: { "x-user": user.id },
+        }
+      );
 
       alert("✅ All deleted successfully");
       setMutualMatches([]); // clear from state
@@ -111,14 +126,14 @@ export default function Matches() {
             <h2 className="text-lg font-bold">
               Welcome, {user?.username || "Guest"}
             </h2>
-            <p className="text-gray-600">Pilih 3 orang pilihan mu</p>
+            <p className="text-gray-600">Pilih 2 orang pilihan mu</p>
           </div>
         </div>
 
         <div className="flex items-center gap-3">
           <button
             onClick={handleLogout}
-            className="bg-red-300 hover:bg-red-500 text-white py-1 px-3 rounded"
+            className="bg-outline-red-300 hover:bg-red-500 hover:text-white text-red-300 py-1 px-3 rounded"
           >
             Logout
           </button>

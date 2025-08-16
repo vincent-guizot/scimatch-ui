@@ -3,6 +3,7 @@ import { useNavigate, Link } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import axios from "axios";
 import useFilteredPeople from "../hooks/useFilteredPeople";
+import { motion } from "framer-motion";
 
 export default function Home() {
   const { user, logout } = useAuth();
@@ -37,8 +38,8 @@ export default function Home() {
   const toggleSelect = (person) => {
     const alreadySelected = selectedPeople.find((p) => p.id === person.id);
 
-    if (!alreadySelected && selectedPeople.length >= 3) {
-      alert("You can only select up to 3 matches.");
+    if (!alreadySelected && selectedPeople.length >= 2) {
+      alert("You can only select up to 2 matches.");
       return;
     }
 
@@ -57,9 +58,13 @@ export default function Home() {
         matches: selectedPeople.map((p) => String(p.id)),
       };
 
-      await axios.post("http://localhost:5000/api/likes", payload, {
-        headers: { "x-user": user.id },
-      });
+      await axios.post(
+        "https://scimatch-server.onrender.com/api/likes",
+        payload,
+        {
+          headers: { "x-user": user.id },
+        }
+      );
 
       alert("Matches sent successfully!");
       setSelectedPeople([]);
@@ -82,21 +87,23 @@ export default function Home() {
       {/* Logo + Welcome + Logout + Matches Link */}
       <div className="flex items-center justify-between mb-6">
         <div className="flex items-center gap-4">
-          <img
+          {/* Logo bounce */}
+          <motion.img
             src="/logo.png"
             alt="logo"
             className="w-16 h-16 object-contain"
+            animate={{ y: [0, -10, 0] }}
+            transition={{ duration: 1.5, repeat: Infinity }}
           />
           <div>
             <h2 className="text-lg font-bold">
               Welcome, {user?.username || "Guest"}
             </h2>
-            <p className="text-gray-600">Pilih 3 orang pilihan mu</p>
+            <p className="text-gray-600">Pilih 2 orang pilihan mu</p>
           </div>
         </div>
 
         <div className="flex items-center gap-3">
-          {/* Show Matches link only for admin/developer */}
           {(user?.role === "Admin" || user?.role === "Developer") && (
             <Link
               to="/matches"
@@ -117,16 +124,25 @@ export default function Home() {
       {/* People list */}
       {filteredPeople.length > 0 ? (
         <div className="grid grid-cols-2 gap-4">
-          {filteredPeople.map((person) => (
-            <div
+          {filteredPeople.map((person, idx) => (
+            <motion.div
               key={person.id}
               onClick={() => toggleSelect(person)}
-              className={`flex items-center gap-4 p-4 rounded cursor-pointer transition ${
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: idx * 0.1 }}
+              whileHover={{ scale: 1.03 }}
+              className={`flex items-center gap-4 p-4 rounded-lg shadow-md cursor-pointer transition ${
                 selectedPeople.find((p) => p.id === person.id)
                   ? "bg-red-100"
                   : "hover:bg-red-50"
               }`}
             >
+              <img
+                src={person.image || "/default-avatar.png"}
+                alt={person.fullname || person.username}
+                className="w-12 h-12 rounded-full object-cover"
+              />
               <div>
                 <p className="font-semibold">
                   {person.fullname || person.username}
@@ -135,7 +151,7 @@ export default function Home() {
                   {person.location || "-"}
                 </p>
               </div>
-            </div>
+            </motion.div>
           ))}
         </div>
       ) : (
@@ -143,17 +159,19 @@ export default function Home() {
       )}
 
       {/* Button */}
-      <button
+      <motion.button
         onClick={handleMatch}
         disabled={selectedPeople.length < 1 || filteredPeople.length === 0}
-        className={`mt-6 w-full py-2 px-4 rounded text-white ${
+        whileHover={{ scale: selectedPeople.length < 1 ? 1 : 1.05 }}
+        whileTap={{ scale: selectedPeople.length < 1 ? 1 : 0.95 }}
+        className={`mt-6 w-full py-2 px-4 rounded text-white shadow-md ${
           selectedPeople.length < 1 || filteredPeople.length === 0
             ? "bg-gray-400 cursor-not-allowed"
             : "bg-red-700 hover:bg-red-800"
         }`}
       >
         Show Matches
-      </button>
+      </motion.button>
     </div>
   );
 }
