@@ -1,25 +1,45 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
-import peopleData from "../data/people";
+import axios from "axios";
 
 export default function Home() {
   const { addMatch, matches } = useAuth();
   const navigate = useNavigate();
   const [selectedPeople, setSelectedPeople] = useState([]);
   const [username, setUsername] = useState("");
+  const [peopleData, setPeopleData] = useState([]);
+  const [loading, setLoading] = useState(true);
 
+  // Get username from localStorage
   useEffect(() => {
-    const storedUsername = localStorage.getItem("user");
-    if (storedUsername) {
-      setUsername(storedUsername.username);
+    const storedUser = localStorage.getItem("user");
+    if (storedUser) {
+      const parsed = JSON.parse(storedUser);
+      setUsername(parsed.username);
     }
+  }, []);
+
+  // Fetch users from API
+  useEffect(() => {
+    const fetchUsers = async () => {
+      try {
+        const res = await axios.get(
+          "https://scimatch-server.onrender.com/api/users"
+        );
+        setPeopleData(res.data); // assuming API returns array of users
+      } catch (err) {
+        console.error("Failed to fetch users:", err);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchUsers();
   }, []);
 
   const toggleSelect = (person) => {
     const alreadySelected = selectedPeople.includes(person);
 
-    // Prevent selecting more than 3 in total (matches + selected)
     if (!alreadySelected && matches.length + selectedPeople.length >= 3) {
       alert("You can only select up to 3 matches.");
       return;
@@ -37,6 +57,10 @@ export default function Home() {
     navigate("/matches");
   };
 
+  if (loading) {
+    return <div className="p-6 text-center">Loading people...</div>;
+  }
+
   return (
     <div className="p-6">
       {/* Logo + Welcome */}
@@ -46,21 +70,20 @@ export default function Home() {
           alt="logo"
           className="w-16 h-16 object-contain mb-2"
         />
-        <h2 className="text-lg font-bold">
-          Welcome, {username || "Guest"}
-        </h2>
+        <h2 className="text-lg font-bold">Welcome, {username || "Guest"}</h2>
         <p className="text-gray-600">Pilih 3 orang pilihan mu</p>
       </div>
 
       {/* People list */}
-{/*       <h1 className="text-2xl font-bold mb-4">People</h1> */}
       <div className="grid grid-cols-2 gap-4">
         {peopleData.map((person) => (
           <div
             key={person.id}
             onClick={() => toggleSelect(person)}
-            className={`flex items-center gap-4 p-4  rounded cursor-pointer transition ${
-              selectedPeople.includes(person) ? "bg-stone-50" : "hover:bg-gray-50"
+            className={`flex items-center gap-4 p-4 rounded cursor-pointer transition ${
+              selectedPeople.includes(person)
+                ? "bg-stone-50"
+                : "hover:bg-gray-50"
             }`}
           >
             <img
@@ -91,5 +114,3 @@ export default function Home() {
     </div>
   );
 }
-
-
