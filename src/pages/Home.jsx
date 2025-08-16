@@ -63,6 +63,7 @@ export default function Home() {
 
       alert("Matches sent successfully!");
       setSelectedPeople([]);
+      navigate("/matches");
     } catch (err) {
       console.error("Failed to send matches:", err.response?.data || err);
       alert(err.response?.data?.message || "Failed to send matches");
