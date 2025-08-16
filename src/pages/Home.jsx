@@ -27,9 +27,12 @@ export default function Home() {
         const res = await axios.get(
           "https://scimatch-server.onrender.com/api/users"
         );
-        setPeopleData(res.data); // assuming API returns array of users
+
+        // Use array from response or empty array if none
+        setPeopleData(res.data || []);
       } catch (err) {
         console.error("Failed to fetch users:", err);
+        setPeopleData([]);
       } finally {
         setLoading(false);
       }
@@ -75,36 +78,40 @@ export default function Home() {
       </div>
 
       {/* People list */}
-      <div className="grid grid-cols-2 gap-4">
-        {peopleData.map((person) => (
-          <div
-            key={person.id}
-            onClick={() => toggleSelect(person)}
-            className={`flex items-center gap-4 p-4 rounded cursor-pointer transition ${
-              selectedPeople.includes(person)
-                ? "bg-stone-50"
-                : "hover:bg-gray-50"
-            }`}
-          >
-            <img
-              src={person.image}
-              alt={person.name}
-              className="w-16 h-16 object-cover rounded-full border"
-            />
-            <div>
-              <p className="font-semibold">{person.name}</p>
-              <p className="text-sm text-gray-500">{person.location}</p>
+      {peopleData.length > 0 ? (
+        <div className="grid grid-cols-2 gap-4">
+          {peopleData.map((person) => (
+            <div
+              key={person.id}
+              onClick={() => toggleSelect(person)}
+              className={`flex items-center gap-4 p-4 rounded cursor-pointer transition ${
+                selectedPeople.includes(person)
+                  ? "bg-stone-50"
+                  : "hover:bg-gray-50"
+              }`}
+            >
+              <img
+                src={person.image}
+                alt={person.name}
+                className="w-16 h-16 object-cover rounded-full border"
+              />
+              <div>
+                <p className="font-semibold">{person.name}</p>
+                <p className="text-sm text-gray-500">{person.location}</p>
+              </div>
             </div>
-          </div>
-        ))}
-      </div>
+          ))}
+        </div>
+      ) : (
+        <p className="text-center text-gray-500 mt-6">There's no data</p>
+      )}
 
       {/* Button */}
       <button
         onClick={handleMatch}
-        disabled={selectedPeople.length < 1}
+        disabled={selectedPeople.length < 1 || peopleData.length === 0}
         className={`mt-6 w-full py-2 px-4 rounded text-white ${
-          selectedPeople.length < 1
+          selectedPeople.length < 1 || peopleData.length === 0
             ? "bg-gray-400 cursor-not-allowed"
             : "bg-red-600 hover:bg-red-700"
         }`}
