@@ -1,24 +1,20 @@
 import { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import axios from "axios";
 import useFilteredPeople from "../hooks/useFilteredPeople";
 
 export default function Home() {
-  const { user, logout } = useAuth(); // Only get user and logout from context
+  const { user, logout } = useAuth();
   const navigate = useNavigate();
   const [selectedPeople, setSelectedPeople] = useState([]);
   const [peopleData, setPeopleData] = useState([]);
   const [loading, setLoading] = useState(true);
 
-  // Redirect if no user in context
   useEffect(() => {
-    if (!user) {
-      navigate("/");
-    }
+    if (!user) navigate("/");
   }, [navigate, user]);
 
-  // Fetch users from API
   useEffect(() => {
     const fetchUsers = async () => {
       try {
@@ -38,7 +34,6 @@ export default function Home() {
 
   const filteredPeople = useFilteredPeople(user, peopleData);
 
-  // Toggle selection in local state
   const toggleSelect = (person) => {
     const alreadySelected = selectedPeople.find((p) => p.id === person.id);
 
@@ -54,27 +49,20 @@ export default function Home() {
     }
   };
 
-  // Send selected matches to backend
   const handleMatch = async () => {
     if (!user || selectedPeople.length === 0) return;
 
     try {
       const payload = {
-        matches: selectedPeople.map((p) => String(p.id)), // just array of IDs
+        matches: selectedPeople.map((p) => String(p.id)),
       };
 
-      await axios.post(
-        "https://scimatch-server.onrender.com/api/likes",
-        payload,
-        {
-          headers: {
-            "x-user-id": user.id, // authUser middleware uses this
-          },
-        }
-      );
+      await axios.post("http://localhost:5000/api/likes", payload, {
+        headers: { "x-user": user.id },
+      });
 
       alert("Matches sent successfully!");
-      setSelectedPeople([]); // clear selections
+      setSelectedPeople([]);
     } catch (err) {
       console.error("Failed to send matches:", err.response?.data || err);
       alert(err.response?.data?.message || "Failed to send matches");
@@ -90,23 +78,39 @@ export default function Home() {
 
   return (
     <div className="p-6">
-      {/* Logo + Welcome + Logout */}
-      <div className="flex flex-col items-center mb-6">
-        <img
-          src="/logo.png"
-          alt="logo"
-          className="w-16 h-16 object-contain mb-2"
-        />
-        <h2 className="text-lg font-bold">
-          Welcome, {user?.username || "Guest"}
-        </h2>
-        <p className="text-gray-600 mb-2">Pilih 3 orang pilihan mu</p>
-        <button
-          onClick={handleLogout}
-          className="bg-gray-500 hover:bg-gray-600 text-white py-1 px-3 rounded"
-        >
-          Logout
-        </button>
+      {/* Logo + Welcome + Logout + Matches Link */}
+      <div className="flex items-center justify-between mb-6">
+        <div className="flex items-center gap-4">
+          <img
+            src="/logo.png"
+            alt="logo"
+            className="w-16 h-16 object-contain"
+          />
+          <div>
+            <h2 className="text-lg font-bold">
+              Welcome, {user?.username || "Guest"}
+            </h2>
+            <p className="text-gray-600">Pilih 3 orang pilihan mu</p>
+          </div>
+        </div>
+
+        <div className="flex items-center gap-3">
+          {/* Show Matches link only for admin/developer */}
+          {(user?.role === "Admin" || user?.role === "Developer") && (
+            <Link
+              to="/matches"
+              className="bg-green-700 hover:bg-green-800 text-white py-1 px-3 rounded"
+            >
+              Matches
+            </Link>
+          )}
+          <button
+            onClick={handleLogout}
+            className="bg-red-300 hover:bg-red-500 text-white py-1 px-3 rounded"
+          >
+            Logout
+          </button>
+        </div>
       </div>
 
       {/* People list */}
