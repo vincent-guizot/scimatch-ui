@@ -68,7 +68,11 @@ export default function Matches() {
   };
 
   const handleDeleteAllMatches = async () => {
-    if (!window.confirm("⚠️ Are you sure you want to delete ALL matches?"))
+    if (
+      !window.confirm(
+        "⚠️ Are you sure you want to delete ALL likes and matches?"
+      )
+    )
       return;
 
     try {
@@ -76,7 +80,11 @@ export default function Matches() {
         headers: { "x-user": user.id },
       });
 
-      alert("✅ All matches deleted successfully");
+      await axios.delete("http://localhost:5000/api/likes/delete/all", {
+        headers: { "x-user": user.id },
+      });
+
+      alert("✅ All deleted successfully");
       setMutualMatches([]); // clear from state
 
       // optional: re-fetch matches to ensure fresh data
