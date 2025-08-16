@@ -56,23 +56,28 @@ export default function Home() {
 
   // Send selected matches to backend
   const handleMatch = async () => {
-    if (!user) return;
+    if (!user || selectedPeople.length === 0) return;
+
     try {
-      const payload = selectedPeople.map((p) => ({
-        userId: user.id,
-        likedUserId: p.id,
-      }));
+      const payload = {
+        matches: selectedPeople.map((p) => String(p.id)), // just array of IDs
+      };
 
       await axios.post(
-        "https://scimatch-server.onrender.com/api/likes/create",
-        payload
+        "https://scimatch-server.onrender.com/api/likes",
+        payload,
+        {
+          headers: {
+            "x-user-id": user.id, // authUser middleware uses this
+          },
+        }
       );
 
       alert("Matches sent successfully!");
-      setSelectedPeople([]); // Clear selections
+      setSelectedPeople([]); // clear selections
     } catch (err) {
-      console.error("Failed to send matches:", err);
-      alert("Failed to send matches");
+      console.error("Failed to send matches:", err.response?.data || err);
+      alert(err.response?.data?.message || "Failed to send matches");
     }
   };
 
@@ -113,8 +118,8 @@ export default function Home() {
               onClick={() => toggleSelect(person)}
               className={`flex items-center gap-4 p-4 rounded cursor-pointer transition ${
                 selectedPeople.find((p) => p.id === person.id)
-                  ? "bg-stone-50"
-                  : "hover:bg-gray-50"
+                  ? "bg-red-100"
+                  : "hover:bg-red-50"
               }`}
             >
               <div>
@@ -139,7 +144,7 @@ export default function Home() {
         className={`mt-6 w-full py-2 px-4 rounded text-white ${
           selectedPeople.length < 1 || filteredPeople.length === 0
             ? "bg-gray-400 cursor-not-allowed"
-            : "bg-red-600 hover:bg-red-700"
+            : "bg-red-700 hover:bg-red-800"
         }`}
       >
         Show Matches
