@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import axios from "axios";
 import { useAuth } from "../context/AuthContext";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 export default function Matches() {
   const { user, logout } = useAuth();
@@ -9,55 +9,82 @@ export default function Matches() {
   const [mutualMatches, setMutualMatches] = useState([]);
   const [loading, setLoading] = useState(true);
 
+  const navigate = useNavigate();
   useEffect(() => {
-    const fetchMatches = async () => {
-      if (!user) return;
-
-      try {
-        if (user.role === "Member") {
-          const res = await axios.get("http://localhost:5000/api/likes", {
-            headers: { "x-user": user.id },
-          });
-
-          setMemberChoices(
-            res.data
-              .filter((like) => like.UserId === user.id)
-              .map((like) => like.likedUser.username)
-          );
-          console.log("res: ", res);
-        } else {
-          await axios.get("http://localhost:5000/api/matches/generate", {
-            headers: { "x-user": user.id },
-          });
-
-          const res = await axios.get("http://localhost:5000/api/matches", {
-            headers: { "x-user": user.id },
-          });
-          console.log(res);
-          const mutuals = res.data.filter((m) => m.User1Id && m.User2Id);
-
-          setMutualMatches(
-            mutuals.map((m) => ({
-              userA: m.user1.username || m.user1.fullname || m.User1Id,
-              userB: m.user2.username || m.user2.fullname || m.User2Id,
-            }))
-          );
-        }
-      } catch (err) {
-        console.error("Failed to fetch matches:", err);
-        setMemberChoices([]);
-        setMutualMatches([]);
-      } finally {
-        setLoading(false);
-      }
-    };
-
     fetchMatches();
+    // eslint-disable-next-line
   }, [user]);
+
+  const fetchMatches = async () => {
+    if (!user) return;
+
+    try {
+      if (user.role === "Member") {
+        const res = await axios.get("http://localhost:5000/api/likes", {
+          headers: { "x-user": user.id },
+        });
+
+        setMemberChoices(
+          res.data
+            .filter((like) => like.UserId === user.id)
+            .map((like) => like.likedUser.username)
+        );
+      } else {
+        const res = await axios.get("http://localhost:5000/api/matches", {
+          headers: { "x-user": user.id },
+        });
+        const mutuals = res.data.filter((m) => m.User1Id && m.User2Id);
+
+        setMutualMatches(
+          mutuals.map((m) => ({
+            userA: m.user1.username || m.user1.fullname || m.User1Id,
+            userB: m.user2.username || m.user2.fullname || m.User2Id,
+          }))
+        );
+      }
+    } catch (err) {
+      console.error("Failed to fetch matches:", err);
+      setMemberChoices([]);
+      setMutualMatches([]);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const handleLogout = () => {
     logout();
     navigate("/");
+  };
+
+  const handleGenerateMatches = async () => {
+    try {
+      await axios.get("http://localhost:5000/api/matches/generate", {
+        headers: { "x-user": user.id },
+      });
+      await fetchMatches();
+    } catch (err) {
+      console.error("Error generating matches:", err);
+    }
+  };
+
+  const handleDeleteAllMatches = async () => {
+    if (!window.confirm("⚠️ Are you sure you want to delete ALL matches?"))
+      return;
+
+    try {
+      await axios.delete("http://localhost:5000/api/matches/delete/all", {
+        headers: { "x-user": user.id },
+      });
+
+      alert("✅ All matches deleted successfully");
+      setMutualMatches([]); // clear from state
+
+      // optional: re-fetch matches to ensure fresh data
+      // await fetchMatches();
+    } catch (err) {
+      console.error("Error deleting all matches:", err);
+      alert("❌ Failed to delete matches. Check console.");
+    }
   };
 
   if (loading) return <p className="p-6 text-center">Loading matches...</p>;
@@ -81,15 +108,6 @@ export default function Matches() {
         </div>
 
         <div className="flex items-center gap-3">
-          {/* Show Matches link only for admin/developer */}
-          {(user?.role === "Admin" || user?.role === "Developer") && (
-            <Link
-              to="/matches"
-              className="bg-green-700 hover:bg-green-800 text-white py-1 px-3 rounded"
-            >
-              Matches
-            </Link>
-          )}
           <button
             onClick={handleLogout}
             className="bg-red-300 hover:bg-red-500 text-white py-1 px-3 rounded"
@@ -102,7 +120,25 @@ export default function Matches() {
       {user.role === "Member" ? (
         <MemberChoices choices={memberChoices} user={user} />
       ) : (
-        <MutualMatches matches={mutualMatches} />
+        <div>
+          {/* Action buttons for Admin/Developer */}
+          <div className="flex gap-3 mb-4">
+            <button
+              onClick={handleGenerateMatches}
+              className="bg-blue-600 hover:bg-blue-700 text-white py-1 px-3 rounded"
+            >
+              Generate Matches
+            </button>
+            <button
+              onClick={handleDeleteAllMatches}
+              className="bg-red-600 hover:bg-red-700 text-white py-1 px-3 rounded"
+            >
+              Delete All Matches
+            </button>
+          </div>
+
+          <MutualMatches matches={mutualMatches} />
+        </div>
       )}
     </div>
   );
@@ -111,12 +147,8 @@ export default function Matches() {
 // ------------------------
 // Member component
 // ------------------------
-// ------------------------
-// Member component
-// ------------------------
 function MemberChoices({ choices, user }) {
   if (!user) return <p className="text-center text-gray-500">Please log in</p>;
-  console.log(choices);
   if (choices.length === 0)
     return (
       <p className="text-center text-gray-500">
