@@ -132,9 +132,9 @@ export default function Home() {
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: idx * 0.1 }}
               whileHover={{ scale: 1.03 }}
-              className={`flex items-center gap-4 p-4 rounded-lg shadow-md cursor-pointer transition ${
+              className={`flex items-center gap-4 p-4 rounded-lg shadow-sm cursor-pointer transition ${
                 selectedPeople.find((p) => p.id === person.id)
-                  ? "bg-red-100"
+                  ? "bg-red-200"
                   : "hover:bg-red-50"
               }`}
             >

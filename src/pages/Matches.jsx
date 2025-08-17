@@ -77,11 +77,7 @@ export default function Matches() {
   };
 
   const handleDeleteAllMatches = async () => {
-    if (
-      !window.confirm(
-        "⚠️ Are you sure you want to delete ALL likes and matches?"
-      )
-    )
+    if (!window.confirm("⚠️ Are you sure you want to delete ALL matches?"))
       return;
 
     try {
@@ -92,6 +88,22 @@ export default function Matches() {
         }
       );
 
+      alert("✅ All deleted successfully");
+      setMutualMatches([]); // clear from state
+
+      // optional: re-fetch matches to ensure fresh data
+      // await fetchMatches();
+    } catch (err) {
+      console.error("Error deleting all matches:", err);
+      alert("❌ Failed to delete matches. Check console.");
+    }
+  };
+
+  const handleDeleteAllLikes = async () => {
+    if (!window.confirm("⚠️ Are you sure you want to delete ALL likes?"))
+      return;
+
+    try {
       await axios.delete(
         "https://scimatch-server.onrender.com/api/likes/delete/all",
         {
@@ -105,7 +117,7 @@ export default function Matches() {
       // optional: re-fetch matches to ensure fresh data
       // await fetchMatches();
     } catch (err) {
-      console.error("Error deleting all matches:", err);
+      console.error("Error deleting all likes:", err);
       alert("❌ Failed to delete matches. Check console.");
     }
   };
@@ -143,20 +155,27 @@ export default function Matches() {
       {user.role === "Member" ? (
         <MemberChoices choices={memberChoices} user={user} />
       ) : (
-        <div>
+        <div className="">
           {/* Action buttons for Admin/Developer */}
           <div className="flex gap-3 mb-4">
             <button
               onClick={handleGenerateMatches}
-              className="bg-blue-600 hover:bg-blue-700 text-white py-1 px-3 rounded"
+              className="bg-blue-700 hover:bg-blue-800 text-white py-1 px-3 rounded"
             >
               Generate Matches
             </button>
+
             <button
-              onClick={handleDeleteAllMatches}
+              onClick={handleDeleteAllLikes}
               className="bg-red-600 hover:bg-red-700 text-white py-1 px-3 rounded"
             >
-              Delete All Matches
+              Delete Likes
+            </button>
+            <button
+              onClick={handleDeleteAllMatches}
+              className="bg-red-700 hover:bg-red-800 text-white py-1 px-3 rounded"
+            >
+              Delete Matches
             </button>
           </div>
 
