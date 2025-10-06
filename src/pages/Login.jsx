@@ -23,7 +23,7 @@ export default function Login() {
 
     try {
       const res = await axios.post(
-        "https://scimatch-server.onrender.com/api/users/login",
+        "https://sci-server.onrender.com/api/users/login",
         { username, password }
       );
 

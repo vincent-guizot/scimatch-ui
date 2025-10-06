@@ -20,7 +20,7 @@ export default function Home() {
     const fetchUsers = async () => {
       try {
         const res = await axios.get(
-          "https://scimatch-server.onrender.com/api/users"
+          "https://sci-server.onrender.com/api/users"
         );
         setPeopleData(res.data.data || []);
       } catch (err) {
@@ -58,13 +58,9 @@ export default function Home() {
         matches: selectedPeople.map((p) => String(p.id)),
       };
 
-      await axios.post(
-        "https://scimatch-server.onrender.com/api/likes",
-        payload,
-        {
-          headers: { "x-user": user.id },
-        }
-      );
+      await axios.post("https://sci-server.onrender.com/api/likes", payload, {
+        headers: { "x-user": user.id },
+      });
 
       alert("Matches sent successfully!");
       setSelectedPeople([]);

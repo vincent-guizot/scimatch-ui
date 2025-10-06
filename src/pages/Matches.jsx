@@ -21,7 +21,7 @@ export default function Matches() {
     try {
       if (user.role === "Member") {
         const res = await axios.get(
-          "https://scimatch-server.onrender.com/api/likes",
+          "https://sci-server.onrender.com/api/likes",
           {
             headers: { "x-user": user.id },
           }
@@ -34,7 +34,7 @@ export default function Matches() {
         );
       } else {
         const res = await axios.get(
-          "https://scimatch-server.onrender.com/api/matches",
+          "https://sci-server.onrender.com/api/matches",
           {
             headers: { "x-user": user.id },
           }
@@ -64,12 +64,9 @@ export default function Matches() {
 
   const handleGenerateMatches = async () => {
     try {
-      await axios.get(
-        "https://scimatch-server.onrender.com/api/matches/generate",
-        {
-          headers: { "x-user": user.id },
-        }
-      );
+      await axios.get("https://sci-server.onrender.com/api/matches/generate", {
+        headers: { "x-user": user.id },
+      });
       await fetchMatches();
     } catch (err) {
       console.error("Error generating matches:", err);
@@ -82,7 +79,7 @@ export default function Matches() {
 
     try {
       await axios.delete(
-        "https://scimatch-server.onrender.com/api/matches/delete/all",
+        "https://sci-server.onrender.com/api/matches/delete/all",
         {
           headers: { "x-user": user.id },
         }
@@ -105,7 +102,7 @@ export default function Matches() {
 
     try {
       await axios.delete(
-        "https://scimatch-server.onrender.com/api/likes/delete/all",
+        "https://sci-server.onrender.com/api/likes/delete/all",
         {
           headers: { "x-user": user.id },
         }
