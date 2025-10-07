@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import axios from "axios";
@@ -8,7 +8,7 @@ export default function Login() {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
-  const { login } = useAuth();
+  const { login, user } = useAuth();
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
 
@@ -27,7 +27,6 @@ export default function Login() {
         { username, password }
       );
 
-      console.log(res.data.data);
       const { password: pwd, ...userDataWithoutPwd } = res.data.data;
       login(userDataWithoutPwd);
 
@@ -42,6 +41,18 @@ export default function Login() {
       setLoading(false);
     }
   };
+
+  useEffect(() => {
+    if (!user) {
+      navigate("/");
+    } else {
+      if (user.role === "Admin") {
+        navigate("/members");
+      } else if (user.role === "Member") {
+        navigate("/matchmaking");
+      }
+    }
+  }, [navigate, user]);
 
   return (
     <div className="flex items-center justify-center h-screen bg-white-100">

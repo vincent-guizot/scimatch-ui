@@ -1,13 +1,16 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import Swal from "sweetalert2";
+import { useAuth } from "../../context/AuthContext";
+import axios from "axios";
 
 const AddMember = () => {
   const navigate = useNavigate();
+  const { user } = useAuth();
 
   const [form, setForm] = useState({
     username: "",
-    password: "123", // default password
+    password: "", // default password
     fullname: "",
     address: "",
     age: "",
@@ -35,21 +38,34 @@ const AddMember = () => {
     }
 
     try {
-      const res = await fetch("https://sci-server.onrender.com/api/users", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(form),
-      });
-
-      if (!res.ok) throw new Error("Failed to create member");
+      const res = await axios.post(
+        "https://sci-server.onrender.com/api/users",
+        { ...form, age: +form.age },
+        {
+          headers: { "Content-Type": "application/json" },
+        }
+      );
 
       Swal.fire("Success!", "Member added successfully!", "success");
-      navigate(".."); // navigate back to /members (relative path)
+
+      navigate("/members"); // navigate to /members
     } catch (error) {
       Swal.fire("Error", "Failed to add member. Please try again.", "error");
       console.error(error);
     }
   };
+
+  // useEffect(() => {
+  //   if (!user) {
+  //     navigate("/");
+  //   } else {
+  //     if (user.role === "Admin") {
+  //       navigate("/members");
+  //     } else if (user.role === "Member") {
+  //       navigate("/matchmaking");
+  //     }
+  //   }
+  // }, [navigate, user]);
 
   return (
     <div className="max-w-2xl mx-auto bg-white shadow-md rounded-lg p-8">
@@ -147,8 +163,8 @@ const AddMember = () => {
             className="w-full border rounded-md p-2 focus:ring focus:ring-blue-300"
           >
             <option value="">Select gender</option>
-            <option value="male">Male</option>
-            <option value="female">Female</option>
+            <option value="Male">Male</option>
+            <option value="Female">Female</option>
           </select>
         </div>
 
@@ -162,8 +178,8 @@ const AddMember = () => {
             className="w-full border rounded-md p-2 focus:ring focus:ring-blue-300"
           >
             <option value="">Select role</option>
-            <option value="admin">Admin</option>
-            <option value="member">Member</option>
+            <option value="Admin">Admin</option>
+            <option value="Member">Member</option>
           </select>
         </div>
 

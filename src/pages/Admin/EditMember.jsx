@@ -2,6 +2,8 @@ import React, { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import Swal from "sweetalert2";
 
+import axios from "axios";
+
 const EditMember = () => {
   const { id } = useParams();
   const navigate = useNavigate();
@@ -22,11 +24,10 @@ const EditMember = () => {
 
   const fetchMember = async () => {
     try {
-      const res = await fetch(
+      const res = await axios(
         `https://sci-server.onrender.com/api/users/${id}`
       );
-      if (!res.ok) throw new Error("Failed to fetch member");
-      const data = await res.json();
+      const data = res.data.data;
       setForm({
         username: data.username || "",
         password: "", // leave blank initially
@@ -70,23 +71,21 @@ const EditMember = () => {
     if (!result.isConfirmed) return;
 
     try {
-      // Remove password from body if empty
-      const payload = { ...form };
+      const payload = { ...form, age: +form.age };
       if (!payload.password) delete payload.password;
 
-      const res = await fetch(
+      console.log(payload);
+      const res = await axios.put(
         `https://sci-server.onrender.com/api/users/${id}`,
+        payload, // Axios automatically JSON.stringify
         {
-          method: "PUT",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(payload),
         }
       );
 
-      if (!res.ok) throw new Error("Failed to update member");
-
       Swal.fire("Updated!", "Member data has been updated.", "success");
-      navigate("..");
+
+      navigate("/members"); // navigate to members page after update
     } catch (error) {
       Swal.fire("Error", "Failed to update member.", "error");
       console.error(error);
@@ -198,8 +197,8 @@ const EditMember = () => {
             className="w-full border rounded-md p-2 focus:ring focus:ring-blue-300"
           >
             <option value="">Select gender</option>
-            <option value="male">Male</option>
-            <option value="female">Female</option>
+            <option value="Male">Male</option>
+            <option value="Female">Female</option>
           </select>
         </div>
 
@@ -210,11 +209,11 @@ const EditMember = () => {
             name="role"
             value={form.role}
             onChange={handleChange}
-            className="w-full border rounded-md p-2 focus:ring focus:ring-blue-300"
+            className="w-ful l border rounded-md p-2 focus:ring focus:ring-blue-300"
           >
             <option value="">Select role</option>
-            <option value="admin">Admin</option>
-            <option value="member">Member</option>
+            <option value="Admin">Admin</option>
+            <option value="Member">Member</option>
           </select>
         </div>
 

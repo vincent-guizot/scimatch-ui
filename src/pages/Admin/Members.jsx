@@ -1,18 +1,21 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import Swal from "sweetalert2";
+import { useAuth } from "../../context/AuthContext";
+import axios from "axios";
 
 const Members = () => {
   const [members, setMembers] = useState([]);
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
 
+  const { user } = useAuth();
+
   // Fetch members
   const fetchMembers = async () => {
     try {
-      const res = await fetch("https://sci-server.onrender.com/api/users");
-      const data = await res.json();
-      setMembers(data);
+      const res = await axios("https://sci-server.onrender.com/api/users");
+      setMembers(res.data.data);
     } catch (error) {
       console.error("Error fetching members:", error);
     } finally {
@@ -24,14 +27,26 @@ const Members = () => {
     fetchMembers();
   }, []);
 
+  useEffect(() => {
+    if (!user) {
+      navigate("/");
+    } else {
+      if (user.role === "Admin") {
+        navigate("/members");
+      } else if (user.role === "Member") {
+        navigate("/matchmaking");
+      }
+    }
+  }, [navigate, user]);
+
   // Navigate to Add Member
   const handleAdd = () => {
-    navigate("add");
+    navigate("/members/add");
   };
 
   // Edit member → navigate to /edit/:id
   const handleEdit = (id) => {
-    navigate(`edit/${id}`);
+    navigate(`/members/edit/${id}`);
   };
 
   // Delete member with Swal confirmation
