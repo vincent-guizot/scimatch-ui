@@ -27,6 +27,7 @@ export default function Login() {
         { username, password }
       );
 
+      console.log(res.data.data);
       const { password: pwd, ...userDataWithoutPwd } = res.data.data;
       login(userDataWithoutPwd);
 

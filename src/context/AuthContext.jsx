@@ -3,10 +3,7 @@ import { createContext, useContext, useState, useEffect } from "react";
 const AuthContext = createContext();
 
 export function AuthProvider({ children }) {
-  const [user, setUser] = useState({
-    id: 1,
-    username: "admin",
-  });
+  const [user, setUser] = useState(null);
 
   // Load user from localStorage on mount
   useEffect(() => {
