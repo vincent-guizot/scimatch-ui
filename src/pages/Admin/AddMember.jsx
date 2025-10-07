@@ -168,7 +168,7 @@ const AddMember = () => {
         </div>
 
         {/* Image (read-only default) */}
-        <div>
+        {/* <div>
           <label className="block text-sm font-semibold mb-1">Image URL</label>
           <input
             type="text"
@@ -182,7 +182,7 @@ const AddMember = () => {
             alt="Preview"
             className="w-24 h-24 rounded-full mt-3 border object-cover"
           />
-        </div>
+        </div> */}
 
         {/* Buttons */}
         <div className="flex justify-end gap-3 pt-4">

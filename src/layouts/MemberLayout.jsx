@@ -26,6 +26,12 @@ const MemberLayout = () => {
 
         <div className="flex items-center gap-3">
           <Link
+            to="/matchmaking"
+            className="bg-green-700 hover:bg-green-800 text-white py-1 px-3 rounded"
+          >
+            Matches
+          </Link>
+          <Link
             to="/matches"
             className="bg-green-700 hover:bg-green-800 text-white py-1 px-3 rounded"
           >
@@ -33,7 +39,7 @@ const MemberLayout = () => {
           </Link>
           <button
             onClick={handleLogout}
-            className="bg-red-300 hover:bg-red-500 text-white py-1 px-3 rounded"
+            className="bg-red-700 hover:bg-red-800 text-white py-1 px-3 rounded"
           >
             Logout
           </button>

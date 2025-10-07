@@ -30,7 +30,7 @@ export default function Login() {
       const { password: pwd, ...userDataWithoutPwd } = res.data.data;
       login(userDataWithoutPwd);
 
-      navigate("/home");
+      navigate("/members");
     } catch (err) {
       console.error(err);
       alert(
