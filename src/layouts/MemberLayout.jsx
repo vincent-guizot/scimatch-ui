@@ -12,13 +12,15 @@ const MemberLayout = () => {
       {/* Header */}
       <div className="flex items-center justify-between mb-6">
         <div className="flex items-center gap-4">
-          <motion.img
-            src="/logo.png"
-            alt="logo"
-            className="w-16 h-16 object-contain"
-            animate={{ y: [0, -10, 0] }}
-            transition={{ duration: 1.5, repeat: Infinity }}
-          />
+          <Link to="/members">
+            <motion.img
+              src="/logo.png"
+              alt="logo"
+              className="w-16 h-16 object-contain cursor-pointer"
+              animate={{ y: [0, -10, 0] }}
+              transition={{ duration: 1.5, repeat: Infinity }}
+            />
+          </Link>
           <h2 className="text-xl font-semibold">Welcome, Admin</h2>
         </div>
 
